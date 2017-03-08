@@ -5,8 +5,6 @@
 #include "Statistics.h"
 #include "vectormath.h"
 #include "Scratch.h"
-#include "APTMKernel.h"
-#include "BWSKernel.h"
 #include "StaticKernel.h"
 
 
@@ -52,36 +50,36 @@ void Scheduler::init(){
 	unsigned nstages = Scratch::getNstage();
 
 	// calculate history aware arrival curves statically for APTM and BWS kernel
-	vector<jobject> haAlpha;
-	if (kernel_type == APTM || kernel_type == BWS){
-		rtc::initialize();
-		long period 	= (long)Scratch::getPeriod()/1000;
-		double jitter 	= (double)Scratch::getJitter()/1000;
-		long delay  	= (long)Scratch::getDistance()/1000;
-		vector<double> rl_job_arrivals = Scratch::getArrivalTimes_ms();
-		vector<double> tmp_scheduling_times = rl_scheduling_times/1000;
+	// vector<jobject> haAlpha;
+	// if (kernel_type == APTM || kernel_type == BWS){
+	// 	rtc::initialize();
+	// 	long period 	= (long)Scratch::getPeriod()/1000;
+	// 	double jitter 	= (double)Scratch::getJitter()/1000;
+	// 	long delay  	= (long)Scratch::getDistance()/1000;
+	// 	vector<double> rl_job_arrivals = Scratch::getArrivalTimes_ms();
+	// 	vector<double> tmp_scheduling_times = rl_scheduling_times/1000;
 
-		haAlpha = rtc::staticHistoryAwareArrialCurves(rl_job_arrivals,
-	 					tmp_scheduling_times, period, jitter, delay);
-	}
+	// 	haAlpha = rtc::staticHistoryAwareArrialCurves(rl_job_arrivals,
+	//  					tmp_scheduling_times, period, jitter, delay);
+	// }
 
 	// get the kernel for different kernel types
 	switch (kernel_type){
 		case APTM : {
-		APTMKernel *tempkernel = new APTMKernel(nstages, Scratch::getDwcets(),
-				vector<double>(nstages, 2), Scratch::getBFactor(), kernel_type);
+		// APTMKernel *tempkernel = new APTMKernel(nstages, Scratch::getDwcets(),
+		// 		vector<double>(nstages, 2), Scratch::getBFactor(), kernel_type);
 
-			tempkernel->setHaAlpha(haAlpha, Scratch::getRltDeadline_ms());
-			tempkernel->setOfflineData(Scratch::getOfflineData());
-			kernel = (ScheduleKernel*) tempkernel;
-			break;
+		// 	tempkernel->setHaAlpha(haAlpha, Scratch::getRltDeadline_ms());
+		// 	tempkernel->setOfflineData(Scratch::getOfflineData());
+		// 	kernel = (ScheduleKernel*) tempkernel;
+		// 	break;
 		}
 		case BWS: {
-			BWSKernel *tempkernel = new BWSKernel(nstages, Scratch::getDwcets(),
-				vector<double>(nstages, 2), kernel_type);
-			tempkernel->setHaAlpha(haAlpha, Scratch::getRltDeadline_ms());
-			kernel = (ScheduleKernel*) tempkernel;
-			break;
+			// BWSKernel *tempkernel = new BWSKernel(nstages, Scratch::getDwcets(),
+			// 	vector<double>(nstages, 2), kernel_type);
+			// tempkernel->setHaAlpha(haAlpha, Scratch::getRltDeadline_ms());
+			// kernel = (ScheduleKernel*) tempkernel;
+			// break;
 		}
 		case PBOO:{
 			StaticKernel *tempkernel = new StaticKernel(nstages, kernel_type);

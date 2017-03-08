@@ -105,17 +105,17 @@ public:
 
 		
 	// This function loads warming curves of the processor from csv files
-	static vector<warmingCurves> parseWarmingingCurve(string,
-		unsigned);
+	// static vector<warmingCurves> parseWarmingingCurve(string,
+		// unsigned);
 
 	// This function loads thermal property data of the processor from csv files
-	static thermalProp getOfflineData(string, unsigned);
+	// static thermalProp getOfflineData(string, unsigned);
 	
 
 	// This function is used for debugging. Not used in real program
-	static pipeinfo loadPipeInfo(unsigned nstage);
+	// static pipeinfo loadPipeInfo(unsigned nstage);
 	// This function is used for debugging. Not used in real program
-	static vector<workerinfo> loadWorkerInfo(unsigned nstage);
+	// static vector<workerinfo> loadWorkerInfo(unsigned nstage);
 
 };
 

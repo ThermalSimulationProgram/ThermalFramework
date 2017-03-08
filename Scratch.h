@@ -3,7 +3,6 @@
 
 #include "Enumerations.h"
 #include "structdef.h"
-#include "rtc.h"
 
 #include <vector>
 #include <string>

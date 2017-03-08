@@ -24,11 +24,11 @@
 // #include "Worker.h"
 #include "Parser.h"
 #include "Scratch.h"
-#include "warming.h"
-#include "rtc.h"
+// #include "warming.h"
+
 // #include "temperature.h"
 #include "vectormath.h"
-#include "APTMKernel.h"
+
 
 
 
@@ -55,16 +55,16 @@ using namespace std;
 
 #define _TESTRTC  0
 
-void testCalcAPTM(vector<double> &tons, vector<double>& toffs, unsigned i);
+// void testCalcAPTM(vector<double> &tons, vector<double>& toffs, unsigned i);
 void runSimulation(int argc, char** argv);
 
-void testAssignToff(double upBound, 
-	const vector<int> &index, const vector<double>& tau0, 
-	const vector<vector<double>>& breakToffs,
-	const vector<vector<double>> &slopes, 
-	const vector<int>& numValidData);
+// void testAssignToff(double upBound, 
+// 	const vector<int> &index, const vector<double>& tau0, 
+// 	const vector<vector<double>>& breakToffs,
+// 	const vector<vector<double>> &slopes, 
+// 	const vector<int>& numValidData);
 
-void testrtc();
+// void testrtc();
 int main(int argc, char** argv){
 	
 
@@ -107,137 +107,137 @@ void runSimulation(int argc, char** argv){
 
 }
 
-void testAssignToff(double upBound, 
-	const vector<int> &index, const vector<double>& tau0, 
-	const vector<vector<double>>& breakToffs,
-	const vector<vector<double>> &slopes, 
-	const vector<int>& numValidData){
+// void testAssignToff(double upBound, 
+// 	const vector<int> &index, const vector<double>& tau0, 
+// 	const vector<vector<double>>& breakToffs,
+// 	const vector<vector<double>> &slopes, 
+// 	const vector<int>& numValidData){
 
-	// vector<double> t1 = vector<double>{15,11,17};
-	// vector<double> t2 = vector<double>{22,17,19};
-	// vector<double> t3 = vector<double>{50,45,78};
-	// vector<vector<double>> tmp = vector<vector<double>>{t1,t2,t3};
-
-
-	// vector<double> t11 = vector<double>{0.5, 0.4,0.37};
-	// vector<double> t21 = vector<double>{0.38,0.35,0.25};
-	// vector<double> t31 = vector<double>{0.2,0.25,0.21};
-	// vector<vector<double>> tmp2 = vector<vector<double>>{t11,t21,t31};
-
-	// vector<int> numValidData = {3,3,3};
+// 	// vector<double> t1 = vector<double>{15,11,17};
+// 	// vector<double> t2 = vector<double>{22,17,19};
+// 	// vector<double> t3 = vector<double>{50,45,78};
+// 	// vector<vector<double>> tmp = vector<vector<double>>{t1,t2,t3};
 
 
-	// vector<int> index={0,1,2};
+// 	// vector<double> t11 = vector<double>{0.5, 0.4,0.37};
+// 	// vector<double> t21 = vector<double>{0.38,0.35,0.25};
+// 	// vector<double> t31 = vector<double>{0.2,0.25,0.21};
+// 	// vector<vector<double>> tmp2 = vector<vector<double>>{t11,t21,t31};
 
-	// vector<double> tau0 = {2,2,2};
-
-	vector<double> ret;
-	APTMKernel::assignToffs(ret, upBound,
-		index, tau0, breakToffs, slopes, numValidData,
-		vecsum(tau0));
-}
+// 	// vector<int> numValidData = {3,3,3};
 
 
-void testCalcAPTM(vector<double> &tons, vector<double>& toffs, unsigned i){
-	Parser p = Parser("example_aptm.xml");
-	p.parseFile();
+// 	// vector<int> index={0,1,2};
 
-	unsigned nstages = 4;
+// 	// vector<double> tau0 = {2,2,2};
 
-	APTMKernel aptmkernel = APTMKernel(nstages, Scratch::getDwcets(), 
-		vector<double>(nstages, 2), 0.93, APTM);
+// 	vector<double> ret;
+// 	APTMKernel::assignToffs(ret, upBound,
+// 		index, tau0, breakToffs, slopes, numValidData,
+// 		vecsum(tau0));
+// }
+
+
+// void testCalcAPTM(vector<double> &tons, vector<double>& toffs, unsigned i){
+// 	Parser p = Parser("example_aptm.xml");
+// 	p.parseFile();
+
+// 	unsigned nstages = 4;
+
+// 	APTMKernel aptmkernel = APTMKernel(nstages, Scratch::getDwcets(), 
+// 		vector<double>(nstages, 2), 0.93, APTM);
 
 		
-	aptmkernel.setOfflineData(Scratch::getOfflineData());
+// 	aptmkernel.setOfflineData(Scratch::getOfflineData());
 
-	 pipeinfo config;
-	 config.Q = vector<int>{0,1,0,0};
-	 config.activeSet = vector<int>{0,1,2,3};
-	 config.sleepSet = vector<int>{};
-	 config.ccs = vector<double>{};
-	 double ttt = 36 + (double)(i%17)/17;
-	 config.dcs = vector<double>{std::numeric_limits<double>::infinity(),
-	 	std::numeric_limits<double>::infinity(), 4.20732,69.7434};
-	 config.rho = vector<double>{0.0127029, 0.0127029,0.0127029,0.0127029};	
-	 config.K = vector<double>{0.180382,0.114326,0.0457306,0.0724068};
-	 config.allT = vector<double>{30,30,30,30};
-	 vector<double> t1 = vector<double>{0,0,0};
-	 vector<double> t2 = vector<double>{0,0,0,89.372,0.849333,0};
-	 vector<double> t3 = vector<double>{0,0,0};
-	 vector<double> t4 = vector<double>{0,0,0};
-	 vector<vector<double>> tmp = vector<vector<double>>{t1,t2,t3,t4};
-	 config.FIFOcurveData = tmp;
-	 config.adaptionIndex = 159;
-
-
-
-	 aptmkernel.calcAPTM(tons, toffs, config);
-
-}
-
-
-void testrtc(){
-	rtc::initialize();
-
-	long period = 100;
-	double jitter = 150;
-	long delay = 1;
-
-	bucket bb = rtc::initbucket(period, jitter, delay);
-
-	jobject alpha = rtc::historyAwareAlphaByLeakyBucket_BSW(bb,  50, 3);
-	cout << rtc::toString(alpha);
-
-
-//b = rtcpjdu(134,67,11);
-	 jobject pjd = rtc::createPJDCurve(100, 0, 0, true );
-	 jobject pjd2 = rtc::affine(pjd, 1, 90);
-	 vector<double> pjdtestdata = rtc::segementsData(pjd2, 1200);
-	 displayvector(pjdtestdata, "pjdtestdata");
-
-	 cout << rtc::minspeedbdfEDG(pjd2, 59) << endl;
-	 cout << rtc::minspeedbdfEDG(pjdtestdata, 59) << endl;
-
-	 cout << rtc::minbdf_BSF(pjd2, 120, 0.4) << endl;
-	 cout << rtc::minbdf_BSF(pjdtestdata, 120, 0.4) << endl;
-
-	 jobject c = rtc::maxconv(alpha, pjd );
-cout << rtc::toString(c );
-	//d = rtcapproxs(c, 500, 0, 1);
-	jobject d = rtc::approxs(c, 700, 1, true );
-	cout << rtc::toString(d );
-	vector<double> data = {0,0,0,5,0,1,10,5,1};
-	vector<double> data2 = {0,2,0,5,2,1,10.1,7,1};
-	jobject apercurve = rtc::Curve(data );
-	jobject apercurve2 = rtc::Curve(data);
-	jobject apercurve3 = rtc::Curve(data2);
-	bool isequal1 = rtc::equals(pjd, apercurve );
-	bool isequal2 = rtc::equals(apercurve2, apercurve );
-	bool isequal3 = rtc::equals(apercurve3, apercurve );
-	cout << "isequal1: " << isequal1 << endl;
-	cout << "isequal2: " << isequal2 << endl;
-	cout << "isequal3: " << isequal3 << endl;
-	double y0 = rtc::y0epsilon(apercurve3 );
-	cout << "y0: " << y0 << endl;
-	double pdxx = rtc::pdx(apercurve3 );
-	cout << "pdxx: " << pdxx << endl;
-
-	jobject aclone = rtc::clone(apercurve3 );
-	bool isequal4 = rtc::equals(apercurve3, aclone );
-	cout << "isequal4: " << isequal4 << endl;
-
-	double maxvd = rtc::maxVDist(apercurve3, apercurve );
-	cout << "maxvd: " << maxvd << endl;
-
-	string curve3 = rtc::toString(apercurve3 );
-	cout << curve3 << endl;
-
-	jobject minconvret = rtc::sub(apercurve, pjd );
-	cout << rtc::toString(minconvret);
+// 	 pipeinfo config;
+// 	 config.Q = vector<int>{0,1,0,0};
+// 	 config.activeSet = vector<int>{0,1,2,3};
+// 	 config.sleepSet = vector<int>{};
+// 	 config.ccs = vector<double>{};
+// 	 double ttt = 36 + (double)(i%17)/17;
+// 	 config.dcs = vector<double>{std::numeric_limits<double>::infinity(),
+// 	 	std::numeric_limits<double>::infinity(), 4.20732,69.7434};
+// 	 config.rho = vector<double>{0.0127029, 0.0127029,0.0127029,0.0127029};	
+// 	 config.K = vector<double>{0.180382,0.114326,0.0457306,0.0724068};
+// 	 config.allT = vector<double>{30,30,30,30};
+// 	 vector<double> t1 = vector<double>{0,0,0};
+// 	 vector<double> t2 = vector<double>{0,0,0,89.372,0.849333,0};
+// 	 vector<double> t3 = vector<double>{0,0,0};
+// 	 vector<double> t4 = vector<double>{0,0,0};
+// 	 vector<vector<double>> tmp = vector<vector<double>>{t1,t2,t3,t4};
+// 	 config.FIFOcurveData = tmp;
+// 	 config.adaptionIndex = 159;
 
 
 
-}
+// 	 aptmkernel.calcAPTM(tons, toffs, config);
+
+// }
+
+
+// void testrtc(){
+// 	rtc::initialize();
+
+// 	long period = 100;
+// 	double jitter = 150;
+// 	long delay = 1;
+
+// 	bucket bb = rtc::initbucket(period, jitter, delay);
+
+// 	jobject alpha = rtc::historyAwareAlphaByLeakyBucket_BSW(bb,  50, 3);
+// 	cout << rtc::toString(alpha);
+
+
+// //b = rtcpjdu(134,67,11);
+// 	 jobject pjd = rtc::createPJDCurve(100, 0, 0, true );
+// 	 jobject pjd2 = rtc::affine(pjd, 1, 90);
+// 	 vector<double> pjdtestdata = rtc::segementsData(pjd2, 1200);
+// 	 displayvector(pjdtestdata, "pjdtestdata");
+
+// 	 cout << rtc::minspeedbdfEDG(pjd2, 59) << endl;
+// 	 cout << rtc::minspeedbdfEDG(pjdtestdata, 59) << endl;
+
+// 	 cout << rtc::minbdf_BSF(pjd2, 120, 0.4) << endl;
+// 	 cout << rtc::minbdf_BSF(pjdtestdata, 120, 0.4) << endl;
+
+// 	 jobject c = rtc::maxconv(alpha, pjd );
+// cout << rtc::toString(c );
+// 	//d = rtcapproxs(c, 500, 0, 1);
+// 	jobject d = rtc::approxs(c, 700, 1, true );
+// 	cout << rtc::toString(d );
+// 	vector<double> data = {0,0,0,5,0,1,10,5,1};
+// 	vector<double> data2 = {0,2,0,5,2,1,10.1,7,1};
+// 	jobject apercurve = rtc::Curve(data );
+// 	jobject apercurve2 = rtc::Curve(data);
+// 	jobject apercurve3 = rtc::Curve(data2);
+// 	bool isequal1 = rtc::equals(pjd, apercurve );
+// 	bool isequal2 = rtc::equals(apercurve2, apercurve );
+// 	bool isequal3 = rtc::equals(apercurve3, apercurve );
+// 	cout << "isequal1: " << isequal1 << endl;
+// 	cout << "isequal2: " << isequal2 << endl;
+// 	cout << "isequal3: " << isequal3 << endl;
+// 	double y0 = rtc::y0epsilon(apercurve3 );
+// 	cout << "y0: " << y0 << endl;
+// 	double pdxx = rtc::pdx(apercurve3 );
+// 	cout << "pdxx: " << pdxx << endl;
+
+// 	jobject aclone = rtc::clone(apercurve3 );
+// 	bool isequal4 = rtc::equals(apercurve3, aclone );
+// 	cout << "isequal4: " << isequal4 << endl;
+
+// 	double maxvd = rtc::maxVDist(apercurve3, apercurve );
+// 	cout << "maxvd: " << maxvd << endl;
+
+// 	string curve3 = rtc::toString(apercurve3 );
+// 	cout << curve3 << endl;
+
+// 	jobject minconvret = rtc::sub(apercurve, pjd );
+// 	cout << rtc::toString(minconvret);
+
+
+
+// }
 	/*Pipeline *p = new Pipeline("example.xml");
 	p->initialize();
 

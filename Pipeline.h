@@ -8,7 +8,7 @@
 
 #include "Enumerations.h"
 #include "Job.h"
-#include "warmingCurve.h"
+// #include "warmingCurve.h"
 #include "structdef.h"
 
 using namespace std;

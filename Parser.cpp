@@ -2,7 +2,6 @@
 #include "Scratch.h"
 #include "TimeUtil.h"
 #include "Enumerations.h"
-#include "warmingCurve.h"
 #include "vectormath.h"
 
 #include <iostream>
@@ -118,19 +117,23 @@ int Parser::parseFile(){
 
 	// handle additional parameters for the scheduler
 	if(type == APTM){
-		unsigned long adaptPeriod = parseTimeMircroSecond(kernel_node.child("period"));
-		double b_factor 		  = kernel_node.child("b_factor").attribute("value").as_double();
+		cout << "APTM Kernel is not supported!" << endl;
+		return 0;
+		// unsigned long adaptPeriod = parseTimeMircroSecond(kernel_node.child("period"));
+		// double b_factor 		  = kernel_node.child("b_factor").attribute("value").as_double();
 
-		xml_node offline_node     = kernel_node.child("offlinedata");
-		string prefix             = offline_node.child("prefix").attribute("path").value();
-		thermalProp offlinedata   = getOfflineData(prefix, nstage);
+		// xml_node offline_node     = kernel_node.child("offlinedata");
+		// string prefix             = offline_node.child("prefix").attribute("path").value();
+		// thermalProp offlinedata   = getOfflineData(prefix, nstage);
 
-		Scratch::setBFactor(b_factor);
-		Scratch::setAdaptionPeriod(adaptPeriod);
-		Scratch::setOfflineData(offlinedata);
+		// Scratch::setBFactor(b_factor);
+		// Scratch::setAdaptionPeriod(adaptPeriod);
+		// Scratch::setOfflineData(offlinedata);
 	}else if (type == BWS){
-		unsigned long adaptPeriod = parseTimeMircroSecond(kernel_node.child("period"));
-		Scratch::setAdaptionPeriod(adaptPeriod);
+		cout << "BWS Kernel is not supported!" << endl;
+		return 0;
+		// unsigned long adaptPeriod = parseTimeMircroSecond(kernel_node.child("period"));
+		// Scratch::setAdaptionPeriod(adaptPeriod);
 	}else if (type == PBOO){
 		ptmspec ptm;
 		vector<unsigned long> tons  = parseTimeVectorMicro<unsigned long>(kernel_node.child("ton"));
@@ -149,137 +152,137 @@ int Parser::parseFile(){
 }
 
 // This function loads thermal property data of the processor from csv files
-thermalProp Parser::getOfflineData(string prefix, unsigned nstage){
-	thermalProp ret;
-	ret.coolbreakToffs = getMatrix(prefix+"_coolBreakToffs.csv");
-	ret.coolslopes     = getMatrix(prefix+"_coolslopes.csv");
-	ret.numValidData   = getVector<int>(prefix+"_numValidData.csv");
-	ret.allStageCurves = parseWarmingingCurve(prefix, nstage);
-	return ret;
-}
+// thermalProp Parser::getOfflineData(string prefix, unsigned nstage){
+// 	thermalProp ret;
+// 	ret.coolbreakToffs = getMatrix(prefix+"_coolBreakToffs.csv");
+// 	ret.coolslopes     = getMatrix(prefix+"_coolslopes.csv");
+// 	ret.numValidData   = getVector<int>(prefix+"_numValidData.csv");
+// 	ret.allStageCurves = parseWarmingingCurve(prefix, nstage);
+// 	return ret;
+// }
 
 
 // This function loads warming curves of the processor from csv files
-vector<warmingCurves> Parser::parseWarmingingCurve(string prefix, unsigned nstage){
+// vector<warmingCurves> Parser::parseWarmingingCurve(string prefix, unsigned nstage){
 
-	// first get the activation slope step
-	unsigned slopestep = (unsigned) getDouble(prefix+"_slopestep.csv");
+// 	// first get the activation slope step
+// 	unsigned slopestep = (unsigned) getDouble(prefix+"_slopestep.csv");
 
-	vector<warmingCurves> ret;
-	// load the warming curves for all stages
-	for (unsigned i = 0; i < nstage; ++i)
-	{
-		// for each stage, the warmingCurves object constains x=floor(95/step) curves
-		warmingCurves aStageCurves = warmingCurves(slopestep);
+// 	vector<warmingCurves> ret;
+// 	// load the warming curves for all stages
+// 	for (unsigned i = 0; i < nstage; ++i)
+// 	{
+// 		// for each stage, the warmingCurves object constains x=floor(95/step) curves
+// 		warmingCurves aStageCurves = warmingCurves(slopestep);
 
-		stringstream name1, name2; 
-		// load the data files for the warmingCurves object.
-		// The format of prefix_warmingdata.csv:
-		// toff11, toff12, toff13, ..., toff1n, toff21, toff22, ... toff2m, .... , toffx1,...,toffxt.
-		// temp11, temp12, temp13, ..., temp1n, temp21, temp22, ... temp2m, .... , tempx1,...,tempxt.
-		// slope11, slope12, ... slope1n, slope21, slope22, ... slope2m, slopex1, ..., slopext.
-		// the element numbers in each curve, i.e., the n, m, and t above, are saved in prefix_warmingdataNumber.csv
-		name1 << prefix << "_warmingdata" << i+1 << ".csv";
-		name2 << prefix << "_warmingdataNumber" << i+1 << ".csv";
+// 		stringstream name1, name2; 
+// 		// load the data files for the warmingCurves object.
+// 		// The format of prefix_warmingdata.csv:
+// 		// toff11, toff12, toff13, ..., toff1n, toff21, toff22, ... toff2m, .... , toffx1,...,toffxt.
+// 		// temp11, temp12, temp13, ..., temp1n, temp21, temp22, ... temp2m, .... , tempx1,...,tempxt.
+// 		// slope11, slope12, ... slope1n, slope21, slope22, ... slope2m, slopex1, ..., slopext.
+// 		// the element numbers in each curve, i.e., the n, m, and t above, are saved in prefix_warmingdataNumber.csv
+// 		name1 << prefix << "_warmingdata" << i+1 << ".csv";
+// 		name2 << prefix << "_warmingdataNumber" << i+1 << ".csv";
 
 
-		// load the matrix representation of the two files
-		vector<vector<double>> tmp  = getMatrix(name1.str());
-		vector<unsigned> dataNumber = getVector<unsigned>(name2.str());
+// 		// load the matrix representation of the two files
+// 		vector<vector<double>> tmp  = getMatrix(name1.str());
+// 		vector<unsigned> dataNumber = getVector<unsigned>(name2.str());
 
-		// load the curve for each activation slope
-		unsigned cursor = 0;
- 		for (unsigned j = 0; j < dataNumber.size(); ++j){
-			unsigned length       = dataNumber[j];
-			vector<int> ids       = integerVector(cursor, cursor+length-1);
-			vector<double> toffs  = vectorExtract(tmp[0], ids);
-			vector<double> temps  = vectorExtract(tmp[1], ids);
-			vector<double> slopes = vectorExtract(tmp[2], ids);
-			// construct a linearSegs object
-			linearSegs tmpSeg     = linearSegs();
-			tmpSeg.setData(toffs, slopes, temps);
+// 		// load the curve for each activation slope
+// 		unsigned cursor = 0;
+//  		for (unsigned j = 0; j < dataNumber.size(); ++j){
+// 			unsigned length       = dataNumber[j];
+// 			vector<int> ids       = integerVector(cursor, cursor+length-1);
+// 			vector<double> toffs  = vectorExtract(tmp[0], ids);
+// 			vector<double> temps  = vectorExtract(tmp[1], ids);
+// 			vector<double> slopes = vectorExtract(tmp[2], ids);
+// 			// construct a linearSegs object
+// 			linearSegs tmpSeg     = linearSegs();
+// 			tmpSeg.setData(toffs, slopes, temps);
 
-			aStageCurves.insert(tmpSeg);
+// 			aStageCurves.insert(tmpSeg);
 
-			cursor += length;
-		}
+// 			cursor += length;
+// 		}
 
-		ret.push_back(aStageCurves);
-	}
-	return ret;
-}
+// 		ret.push_back(aStageCurves);
+// 	}
+// 	return ret;
+// }
 
-// This function is used for debugging. Not used in real program
-pipeinfo Parser::loadPipeInfo(unsigned nstage){
-	pipeinfo ret;
-	ret.Q         = getVector<int>("Q.csv");
-	ret.activeSet = getVector<int>("activeSet.csv");
-	ret.sleepSet  = getVector<int>("sleepSet.csv");
-	ret.ccs       = getVector<double>("ccs.csv");
-	ret.dcs       = getVector<double>("dcs.csv");
-	ret.rho       = getVector<double>("rho.csv");
-	ret.K         = getVector<double>("K.csv");
-	ret.allT      = getVector<double>("allT.csv");
+// // This function is used for debugging. Not used in real program
+// pipeinfo Parser::loadPipeInfo(unsigned nstage){
+// 	pipeinfo ret;
+// 	ret.Q         = getVector<int>("Q.csv");
+// 	ret.activeSet = getVector<int>("activeSet.csv");
+// 	ret.sleepSet  = getVector<int>("sleepSet.csv");
+// 	ret.ccs       = getVector<double>("ccs.csv");
+// 	ret.dcs       = getVector<double>("dcs.csv");
+// 	ret.rho       = getVector<double>("rho.csv");
+// 	ret.K         = getVector<double>("K.csv");
+// 	ret.allT      = getVector<double>("allT.csv");
 
-	vector<vector<double>> tmp;
-	for (unsigned i = 0; i < nstage; ++i)
-	{
-		stringstream name1; 
-		name1 << "FIFOcurveData" << i+1 << ".csv";
-		vector<double> tmpstage = getVector<double>(name1.str());
-		tmp.push_back(tmpstage);
+// 	vector<vector<double>> tmp;
+// 	for (unsigned i = 0; i < nstage; ++i)
+// 	{
+// 		stringstream name1; 
+// 		name1 << "FIFOcurveData" << i+1 << ".csv";
+// 		vector<double> tmpstage = getVector<double>(name1.str());
+// 		tmp.push_back(tmpstage);
 
-	}
+// 	}
 
-	ret.FIFOcurveData = tmp;
-	return ret;
+// 	ret.FIFOcurveData = tmp;
+// 	return ret;
 
-}
+// }
 
-// This function is used for debugging. Not used in real program
-vector<workerinfo> Parser::loadWorkerInfo(unsigned nstage){
+// // This function is used for debugging. Not used in real program
+// vector<workerinfo> Parser::loadWorkerInfo(unsigned nstage){
 	
-	vector<workerinfo> ret;
+// 	vector<workerinfo> ret;
 
-	vector<int> allnfifijobs     = getVector<int>(
-		"allnFIFOJobs.csv");
-	vector<unsigned> allstates   = getVector<unsigned>(
-		"allstates.csv");
-	vector<int> allonGoEventIds  = getVector<int>(
-		"allonGoEventIds.csv");
-	vector<double> allexecuteds  = getVector<double>(
-		"allexecuteds.csv");
-	vector<double> allsleepTimes = getVector<double>(
-		"allsleepTimes.csv");
+// 	vector<int> allnfifijobs     = getVector<int>(
+// 		"allnFIFOJobs.csv");
+// 	vector<unsigned> allstates   = getVector<unsigned>(
+// 		"allstates.csv");
+// 	vector<int> allonGoEventIds  = getVector<int>(
+// 		"allonGoEventIds.csv");
+// 	vector<double> allexecuteds  = getVector<double>(
+// 		"allexecuteds.csv");
+// 	vector<double> allsleepTimes = getVector<double>(
+// 		"allsleepTimes.csv");
 
-	for (int i = 0; i < (int)nstage; ++i)
-	{
-		workerinfo tmp;
-		tmp.stageId   = i;
-		tmp.nFIFOJobs = allnfifijobs[i];
-		tmp.executed  = allexecuteds[i];
-		unsigned s    = allstates[i];
+// 	for (int i = 0; i < (int)nstage; ++i)
+// 	{
+// 		workerinfo tmp;
+// 		tmp.stageId   = i;
+// 		tmp.nFIFOJobs = allnfifijobs[i];
+// 		tmp.executed  = allexecuteds[i];
+// 		unsigned s    = allstates[i];
 
-		if (s==0)
-			tmp.state = _sleep;
-		else
-			tmp.state = _active;
+// 		if (s==0)
+// 			tmp.state = _sleep;
+// 		else
+// 			tmp.state = _active;
 
-		tmp.sleepTime   = allsleepTimes[i];
+// 		tmp.sleepTime   = allsleepTimes[i];
 		
-		tmp.onGoEventId = allonGoEventIds[i];
+// 		tmp.onGoEventId = allonGoEventIds[i];
 
-		stringstream name1;
-		name1 << "allEventAbsDeadlines" << i+1 << ".csv";
-		tmp.allEventAbsDeadlines = getVector<double>(name1.str());
+// 		stringstream name1;
+// 		name1 << "allEventAbsDeadlines" << i+1 << ".csv";
+// 		tmp.allEventAbsDeadlines = getVector<double>(name1.str());
 		
-		name1.str("");
+// 		name1.str("");
 
-		ret.push_back(tmp);
+// 		ret.push_back(tmp);
 
-	}
-	return ret;
-}
+// 	}
+// 	return ret;
+// }
 
 // This function converts a string to a double vector. The  string should be 
 // in format: {number1, number2, ..., numbern} or {number1 number2 ... numbern}

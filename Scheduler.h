@@ -8,7 +8,6 @@
 #include "TimeUtil.h"
 #include "TimedRunnable.h"
 #include "TimeSim.h"
-#include "rtc.h"
 #include "structdef.h"
 
 
