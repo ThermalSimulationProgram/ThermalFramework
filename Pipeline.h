@@ -104,8 +104,8 @@ public:
 		enum _schedule_kernel kernel);
 
 	// This function is used for debugging, not used in real program
-	static void loadInfoFromFile(pipeinfo&, const vector<double>&, 
-		const vector<double>&, enum _schedule_kernel kernel);
+	// static void loadInfoFromFile(pipeinfo&, const vector<double>&, 
+	// 	const vector<double>&, enum _schedule_kernel kernel);
 
 	// get the curve data required to construct the arrival curve of the jobs
 	// in ith FIFO

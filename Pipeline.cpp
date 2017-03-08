@@ -286,33 +286,33 @@ enum _schedule_kernel kernel){
 }
 
 // This function is used for debugging, not used in real program
-void Pipeline::loadInfoFromFile(pipeinfo& config, 
-const vector<double>& wcets, const vector<double>& TBET,
-enum _schedule_kernel kernel){
-	config.allT = getVector<double>("allT.csv");
-	double curTime = getDouble("CurTime.csv");
-	unsigned ustages = wcets.size();
-	vector<workerinfo> allinfo =  Parser::loadWorkerInfo(ustages);
-	for (unsigned i = 0; i < ustages; ++i){
+// void Pipeline::loadInfoFromFile(pipeinfo& config, 
+// const vector<double>& wcets, const vector<double>& TBET,
+// enum _schedule_kernel kernel){
+// 	config.allT = getVector<double>("allT.csv");
+// 	double curTime = getDouble("CurTime.csv");
+// 	unsigned ustages = wcets.size();
+// 	vector<workerinfo> allinfo =  Parser::loadWorkerInfo(ustages);
+// 	for (unsigned i = 0; i < ustages; ++i){
 		
-		workerinfo tmp = allinfo[i];
-		config.Q.push_back(tmp.nFIFOJobs);
-		if (tmp.state == _sleep){
-			config.sleepSet.push_back(tmp.stageId);
-			if (TBET[i] > tmp.sleepTime)
-				config.ccs.push_back(TBET[i] - tmp.sleepTime);
-			else
-				config.ccs.push_back(0);
-		}
-		else
-			config.activeSet.push_back(tmp.stageId);
+// 		workerinfo tmp = allinfo[i];
+// 		config.Q.push_back(tmp.nFIFOJobs);
+// 		if (tmp.state == _sleep){
+// 			config.sleepSet.push_back(tmp.stageId);
+// 			if (TBET[i] > tmp.sleepTime)
+// 				config.ccs.push_back(TBET[i] - tmp.sleepTime);
+// 			else
+// 				config.ccs.push_back(0);
+// 		}
+// 		else
+// 			config.activeSet.push_back(tmp.stageId);
 
-		config.FIFOcurveData.push_back(getFIFODemands(curTime,
-			tmp.allEventAbsDeadlines, tmp.onGoEventId, tmp.executed,
-			wcets[i], kernel));
-	}
+// 		config.FIFOcurveData.push_back(getFIFODemands(curTime,
+// 			tmp.allEventAbsDeadlines, tmp.onGoEventId, tmp.executed,
+// 			wcets[i], kernel));
+// 	}
 	
-}
+// }
 
 // get the curve data required to construct the arrival curve of the jobs
 // in ith FIFO
