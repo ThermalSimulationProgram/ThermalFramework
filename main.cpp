@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <string>
 #include <semaphore.h>
-#include <jni.h>
 #include <vector>
 #include <exception>
 #include <algorithm>

@@ -2,10 +2,10 @@
 
 #Main compiler/linker variables
 CXX=g++
-CFLAGS=-Wall -I./src/ -I/usr/lib/jvm/java-8-openjdk-amd64/include -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux -g -std=c++11
-CARG=-lrt -ljvm
+CFLAGS=-Wall  -g -std=c++11
+CARG=-lrt 
 LFLAGS= -lm 
-LARG=-ldl -lpthread -lrt -ljvm 
+LARG=-ldl -lpthread -lrt 
 M_FLAGS=-Wall -pthread -c -g 
 
 
@@ -26,14 +26,14 @@ APPNAME := main
 SOURCES := $(wildcard *.cpp)
 OBJECTS := $(patsubst %.cpp, %.o, $(SOURCES))
 
-INCLUDE := -I/usr/lib/jvm/java-8-openjdk-amd64/include -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux -I/usr/lib/jvm/java-8-oracle/include -I/usr/lib/jvm/java-8-oracle/include/linux
+INCLUDE := 
 LIBPATH := 
-LIBS    := -ldl -lpthread -lrt -ljvm -lm
+LIBS    := -ldl -lpthread -lrt  -lm
 
 #FLAGS    := -O3 -Wall -g 
 FLAGS    := -Wall -g 
 CCFLAGS  := $(FLAGS)
-CXXFLAGS := $(FLAGS) -std=c++11 -lrt -ljvm
+CXXFLAGS := $(FLAGS) -std=c++11 -lrt 
 
 GENCODE_FLAGS := 
 NVCCFLAGS     := 
