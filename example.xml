@@ -15,11 +15,9 @@
    </events>
 
    <scheduler>
-      <kernel type="APTM">
-         <period value="30" units="ms"/>
-         <offlinedata>
-            <prefix path="./csv_data/Dell9020ThermalProp"/>
-         </offlinedata>
+      <kernel type="PBOO">
+         <ton value="{30 30 30 30}" units="ms"/>
+         <toff value="{10 10 10 10}" units="ms"/>
       </kernel>
    </scheduler>
 

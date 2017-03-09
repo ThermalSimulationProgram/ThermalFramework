@@ -117,8 +117,8 @@ int Parser::parseFile(){
 
 	// handle additional parameters for the scheduler
 	if(type == APTM){
-		cout << "APTM Kernel is not supported!" << endl;
-		return 0;
+		cout << "Parser error: APTM Kernel is not supported!" << endl;
+		return -1;
 		// unsigned long adaptPeriod = parseTimeMircroSecond(kernel_node.child("period"));
 		// double b_factor 		  = kernel_node.child("b_factor").attribute("value").as_double();
 
@@ -130,8 +130,8 @@ int Parser::parseFile(){
 		// Scratch::setAdaptionPeriod(adaptPeriod);
 		// Scratch::setOfflineData(offlinedata);
 	}else if (type == BWS){
-		cout << "BWS Kernel is not supported!" << endl;
-		return 0;
+		cout << "Parser error: BWS Kernel is not supported!" << endl;
+		return -1;
 		// unsigned long adaptPeriod = parseTimeMircroSecond(kernel_node.child("period"));
 		// Scratch::setAdaptionPeriod(adaptPeriod);
 	}else if (type == PBOO){
