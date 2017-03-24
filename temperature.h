@@ -24,6 +24,11 @@
 #define SENSORS_ERR_IO		10 /* I/O error */
 #define SENSORS_ERR_RECURSION	11 /* Evaluation recurses too deep */
 
+typedef struct temp_res{
+	unsigned long time;
+	vector<double> 	res;
+} temp_res_type;
+
 
 typedef enum sensors_feature_type {
 	SENSORS_FEATURE_IN		= 0x00,
@@ -149,8 +154,8 @@ using namespace std;
 class TempWatcher : public TimedRunnable{
 
 protected:
-	vector<vector<double>> tempTrace;
-	vector<double> curTemp;
+	vector<temp_res_type> tempTrace;
+	temp_res_type resTemp;
 
 
 	vector<unsigned long> reading_times;
@@ -164,7 +169,7 @@ public:
 	TempWatcher(unsigned, string, unsigned);
 	~TempWatcher();
 
-	static std::vector<double> get_cpu_temperature();
+	temp_res_type get_cpu_temperature();
 
 
 	void activate();
@@ -178,13 +183,13 @@ public:
 
 	void timedJob(unsigned);
 
-	vector<double> getCurTemp();
+	temp_res_type getCurTemp();
 
 	void toFile();
 
-	double getMaxTemp();
+	//double getMaxTemp();
 
-	vector<double> getMeanTemp();
+	//vector<double> getMeanTemp();
 
 
 

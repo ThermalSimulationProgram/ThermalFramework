@@ -1,9 +1,11 @@
 #include "temperature.h"
+#include "TimeUtil.h"
 #include "Pipeline.h"
 #include "Scratch.h"
 #include "vectormath.h"
 #include "Priorities.h"
 #include "Semaphores.h"
+#include "Statistics.h"
 
 #include <iostream>
 #include <fstream>
@@ -16,7 +18,7 @@ using namespace std;
 
 #define _INFO 1
 
-#define _DEBUG 1
+#define _DEBUG 0
 
 
 
@@ -30,7 +32,7 @@ TempWatcher::TempWatcher(unsigned period, string _filename, unsigned _id): Timed
   sem_init(&temp_sem, 0, 1);
 
   sem_wait(&temp_sem);
-  curTemp = get_cpu_temperature();
+  resTemp = get_cpu_temperature();
   sem_post(&temp_sem);
   unsigned count           = sim_length/period;
   for (unsigned i = 0; i < count; ++i){
@@ -79,7 +81,7 @@ void TempWatcher::wrapper(){
 
   timedRun();
 
-	//toFile();
+  toFile();
 
 	#if _INFO == 1
   Semaphores::print_sem.wait_sem();
@@ -95,16 +97,16 @@ void TempWatcher::setReadingTimes(unsigned long start_time){
 
 void TempWatcher::timedJob(unsigned index){
 	sem_wait(&temp_sem);
-  curTemp = get_cpu_temperature();
+  resTemp = get_cpu_temperature();
   sem_post(&temp_sem);
-  tempTrace.push_back(curTemp);
+  tempTrace.push_back(resTemp);
 }
 
 
-vector<double> TempWatcher::getCurTemp(){
-  vector<double> ret;
+temp_res_type TempWatcher::getCurTemp(){
+  temp_res_type ret;
   sem_wait(&temp_sem);
-  ret = curTemp ;
+  ret = resTemp ;
   sem_post(&temp_sem);
 
   return ret;
@@ -118,14 +120,17 @@ void TempWatcher::toFile(){
   file.open((filename + "_temprature_trace.csv").data());
   for(unsigned int c=0; c< tempTrace.size();c++) {
   	stringstream out;
-    vector<double> tmp = tempTrace[c];
+    vector<double> tmp = tempTrace[c].res;
+    
+    out << tempTrace[c].time << ",";
     for (unsigned i = 0; i < tmp.size(); ++i){
     	if ( i != tmp.size()-1 )
     		out << tmp[i] << "," ;
     	else
     		out << tmp[i];
     }
-
+    //out << tempTrace[c].time;
+    
     file << out.str() << endl; 
   }
   file.close();
@@ -140,20 +145,22 @@ void TempWatcher::toFile(){
 }
 
 
-std::vector<double> TempWatcher::get_cpu_temperature(){
+temp_res_type TempWatcher::get_cpu_temperature(){
 	#if _DEBUG == 1
     std::vector<double> ret(4, 30);
   #endif
 
     #if _DEBUG == 0
     std::vector<double> ret;
+    temp_res_type result;
     int value;
     int TEMP_IDX_MAX = 4;
     FILE *f;
-    const char* n[] = {	"/sys/class/hwmon/hwmon1/temp2_input",
-    "/sys/class/hwmon/hwmon1/temp3_input",
-    "/sys/class/hwmon/hwmon1/temp4_input",
-    "/sys/class/hwmon/hwmon1/temp5_input"};
+    const char* n[] = {	"/sys/class/hwmon/hwmon0/temp1_input",
+    "/sys/class/hwmon/hwmon1/temp1_input",
+    "/sys/class/hwmon/hwmon2/temp2_input",
+    "/sys/class/hwmon/hwmon2/temp4_input"};
+
 
     for ( int i = 0; i < TEMP_IDX_MAX; ++i) {
       if ( ( f = fopen( n[i], "r"))) {
@@ -182,6 +189,8 @@ std::vector<double> TempWatcher::get_cpu_temperature(){
        }
      }
             // value /= get_type_scaling( SENSORS_SUBFEATURE_TEMP_INPUT);
+	    value /= 1000;
+	    //cout << "cureTemp = " << value << endl;
    } else{
      std::cout << -SENSORS_ERR_KERNEL << " error"<<std::endl;
      exit(-SENSORS_ERR_KERNEL) ;
@@ -191,9 +200,13 @@ std::vector<double> TempWatcher::get_cpu_temperature(){
  }
 #endif
 
-return ret;
-}
+result.time = Statistics::getRelativeTime_ms();
+cout << "cureTime = " << result.time << endl;
+result.res  = ret;
 
+return result;
+}
+/*
 double TempWatcher::getMaxTemp(){
 	vector<double> s_max;
   s_max.reserve(tempTrace.size());
@@ -208,7 +221,9 @@ double TempWatcher::getMaxTemp(){
   // return avg;
 
 }
+*/
 
+/*
 
 vector<double> TempWatcher::getMeanTemp(){
   vector<double> ret;
@@ -233,7 +248,7 @@ vector<double> TempWatcher::getMeanTemp(){
   return ret;
 
 }
-
+*/
 
 
 // int get_type_scaling(sensors_subfeature_type type)

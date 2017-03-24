@@ -22,13 +22,26 @@ using namespace std;
 
 class Worker : public Thread
 {
+
+
+
 protected:
 	int stageId;
 	unsigned long ton;
 	unsigned long toff;
+	
+	vector<unsigned long> times_pr;
+	vector<unsigned long> freqs_pr;
+	unsigned long cnt;
+	int freqs_nr;
+	int idx;
+	bool setfreq;
+	bool loop;
+	unsigned long times_max;
 
 	enum _worker_state state;
 	struct timespec latestSleep;
+	struct timespec latestSleep2;
 
 
 	///This vector stores the ids of jobs that are waiting for execution
@@ -63,6 +76,8 @@ public:
 	
 	void activate();
 
+	void setCPUfreq(int,int);
+
 	void wrapper();
 
 	void newJob(Job*);
@@ -74,6 +89,8 @@ public:
 	void setNext(Worker*);
 
 	void setPipeline(Pipeline*);
+
+	void setfreqs_times(vector<unsigned long>,vector<unsigned long>,unsigned long);
 
 	void setPTM(unsigned long, unsigned long);
 

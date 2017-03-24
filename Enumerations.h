@@ -52,10 +52,15 @@ enum _task_action
   deadline_missed,
   sim_end,              //10
 
-  sleep_start,
-  sleep_end,
-  active_start,
-  active_end
+  sleep_start,          //11
+  sleep_end,		//12
+  active_start,		//13	
+  active_end,		//14
+  
+  freq_active_start,	//15
+  freq_active_end,	//16
+  freq_Idle_start,	//17
+  freq_Idle_end		//18
 };
 
 ///This enumeration describes the possible loads for a worker

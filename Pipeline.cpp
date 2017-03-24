@@ -115,8 +115,14 @@ void Pipeline::initialize(){
 	tempwatcher->trigger();
 
 	Worker *current;
+	vector<unsigned long> fr = Scratch::getFreqs();
+	vector<unsigned long> tim = Scratch::getTimes();
+	unsigned long max_time = Scratch::getMaxTime();
+	
 	for (int i = 0; i < n_stages; ++i){
 		current = workers[i];
+		if (i==0)
+			current->setfreqs_times(fr,tim,max_time);	
 		if (i < n_stages-1)
 			current->setNext(workers[i+1]);
 		else
@@ -175,15 +181,15 @@ int Pipeline::simulate(){
 	// join other threads, wait them to finish
 	join_all();
 	// return the average temperature 
-	string tempSaveName = Scratch::getName() + "_result";
-	saveDoubleVectorToFile2(tempwatcher->getMeanTemp(), 
-		tempSaveName);
-	double maxTemp = tempwatcher->getMaxTemp();
-	saveDoubleVectorToFile(vector<double>(1, maxTemp),
-		tempSaveName);
+	//string tempSaveName = Scratch::getName() + "_result";
+	//saveDoubleVectorToFile2(tempwatcher->getMeanTemp(), 
+	//	tempSaveName);
+	//double maxTemp = tempwatcher->getMaxTemp();
+	//saveDoubleVectorToFile(vector<double>(1, maxTemp),
+	//	tempSaveName);
 
-	saveDoubleVectorToFile(scheduler->getKernelTime(), 
-		tempSaveName);
+	//saveDoubleVectorToFile(scheduler->getKernelTime(), 
+	//	tempSaveName);
 	return 1;
 }
 
@@ -227,9 +233,9 @@ enum _schedule_kernel kernel){
 	config.FIFOcurveData.clear();
 
 	// get current temperature
-	config.allT = tempwatcher->getCurTemp();
+	//config.allT = tempwatcher->getCurTemp();
 	#if _DEBUG == 1
-	cout << "got temperature\n";
+	//cout << "got temperature\n";
 	#endif
 
 	// get current time from simulation start, unit ms

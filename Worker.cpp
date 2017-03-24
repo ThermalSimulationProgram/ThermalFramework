@@ -30,6 +30,10 @@ Worker::Worker(int _stageId, int _id) : Thread(_id){
 	thread_type = worker;
 	current_job = NULL;
 
+	cnt   	    = 0;
+	idx 	    = 0;
+	setfreq     = true;
+
 	base        = 100;
 	ton         = 100000; // default value, unit us 
 	toff        = 0; // default value, unit us 
@@ -51,6 +55,16 @@ Worker::~Worker(){
 // 	trigger();
 // 	initialized = true;
 // }
+void Worker::setfreqs_times(vector<unsigned long> _freqs , vector<unsigned long> _times,unsigned long _times_max)
+{
+
+ times_pr=_times;
+ freqs_pr=_freqs;
+
+ freqs_nr = (int)freqs_pr.size();
+ times_max = _times_max; 
+
+}
 
 bool Worker::isInitialized(){
 	return initialized;
@@ -150,6 +164,27 @@ void Worker::activate(){
 	setPriority(Priorities::get_active_pr());
 }
 
+
+void Worker::setCPUfreq(int freq , int core){
+
+
+const char* freq_cpu[] = {"/sys/devices/system/cpu/cpu0/cpufreq/scaling_setspeed",
+    "/sys/devices/system/cpu/cpu1/cpufreq/scaling_setspeed",
+    "/sys/devices/system/cpu/cpu2/cpufreq/scaling_setspeed",
+    "/sys/devices/system/cpu/cpu3/cpufreq/scaling_setspeed"};
+
+if (freq==0)
+	freq = 1199000;
+
+//freq_str = freq;
+std::string freq_str = std::to_string(freq);
+//cout <<  " freq ="  << freq_str << endl ;
+//echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+
+system(("echo " + freq_str + " > " + freq_cpu[core]).c_str());
+
+}
+
 void Worker::wrapper(){
 
 	#if _INFO == 1
@@ -194,11 +229,21 @@ void Worker::wrapper(){
   			#endif
 			
 			sem_wait(&ptm_sem);
+			latestSleep2 = TimeUtil::getTime();
+			struct timespec freqsleepend = latestSleep2 + TimeUtil::Micros(toff);
 			struct timespec sleepEnd = latestSleep + TimeUtil::Micros(toff);
 			sem_post(&ptm_sem);
 
 			// try sleep toff us
+			loop=true;
+			setfreq = true;
 			Statistics::addTrace(thread_type, id, sleep_start);
+			Statistics::addTrace(thread_type, 10 , freq_Idle_start);
+			setCPUfreq(0,0);
+			sem_timedwait(&schedule_sem, &freqsleepend);
+			Statistics::addTrace(thread_type, 10 , freq_Idle_end);
+			
+	
 			if (sem_timedwait(&schedule_sem, &sleepEnd) == 0) // unblocked by the schedule signal
 			{
 				//cout<<"receives a schedule signal, break from sleep\n";
@@ -219,15 +264,46 @@ void Worker::wrapper(){
 			total_exed = 0;
 			bool stop = false;
 			Statistics::addTrace(thread_type, id, active_start);
+			
 			do //ton loop
 			{
+				
 				if (sem_trywait(&schedule_sem) == 0)//successfully read a schedule singal, break immediately
 				{
 					//cout<<"receives a schedule signal, break from active\n";
 					Statistics::addTrace(thread_type, id, active_end);
 					break;
 				}
+				if ((setfreq) && (loop))
+				{
+					setCPUfreq(freqs_pr[idx],0);
+					Statistics::addTrace(thread_type, /*(unsigned int)freqs_pr[idx]*/ 11 + idx , freq_active_start);
+					setfreq = false;
+					cnt=1;
+					
+					
+				}				
 				Load::consume_us(base);
+					
+				
+				
+				cnt++;
+				
+
+				if ((cnt==times_pr[idx]) && (loop))
+				{
+					cnt=0;
+					Statistics::addTrace(thread_type, /*(unsigned int)freqs_pr[idx]*/11+idx, freq_active_end);
+					idx++;
+					if (idx==freqs_nr)
+					{
+						idx=0;
+						loop=false;
+					}	
+					setfreq = true;
+									
+				}
+
 				end = TimeUtil::convert_us(TimeUtil::getTime());
 				exedSlice = end - start;
 				total_exed = total_exed + exedSlice;
@@ -245,11 +321,13 @@ void Worker::wrapper(){
 				
 				sem_post(&ptm_sem);
 			} while ((!stop) && Pipeline::isSimulating() );	
+			//Statistics::addTrace(thread_type, /*(unsigned int)freqs_pr[10+freqs_nr]*/10+freqs_nr, freq_active_end);
 			Statistics::addTrace(thread_type, id, active_end); 
 		}
 	}
-
-
+	//string temp= Scratch::getName();
+	//cout << temp << endl;
+	Statistics::toFile(Scratch::getName());
   #if _INFO == 1
 	Semaphores::print_sem.wait_sem();
 	cout << "Worker " << id << " exiting wrapper...\n";

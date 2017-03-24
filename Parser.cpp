@@ -91,6 +91,32 @@ int Parser::parseFile(){
 	// get the execution time factor
 	double exe_factor = event_node.child("exe_factor").attribute("value").as_double();
 
+	// get the frequencies
+
+	xml_node freq_node = sim_node.child("freq");
+
+	vector<unsigned long> times = parseTimeVectorMicro<unsigned long>(
+		freq_node.child("time"));
+
+	unsigned long maxTime = times[0]/100;
+	for (unsigned short i=0;i<times.size();i++) // 100us steps
+	{
+		times[i]=times[i]/100; 
+		cout << "times= " << times[i] << endl;	
+		if (times[i] > maxTime)
+			maxTime = times[i];
+	}
+	
+	vector<unsigned long> freq = parseTimeVectorMicro<unsigned long>(
+			freq_node.child("frequency"));
+
+
+	for (unsigned short i=0;i<freq.size();i++)
+	{
+		cout << "freq= " << freq[i] << endl;	
+	}
+	cout << "size= " << freq.size() << endl;
+
 	// get scheduler attributes
 	xml_node schedule_node = sim_node.child("scheduler");
 	xml_node kernel_node   = schedule_node.child("kernel");
@@ -111,7 +137,7 @@ int Parser::parseFile(){
 
 	// put all the necessary input parameters in scratch
 	Scratch::initialize(nstage, period, jitter, distance, 
-		rltDeadline, wcets, rl_release_times, type, duration, name);
+		rltDeadline, wcets, times, freq , maxTime, rl_release_times, type, duration, name);
 
 	Scratch::setExeFactor(exe_factor);
 

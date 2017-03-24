@@ -14,7 +14,7 @@ class Scratch{
 public:
 
 	static void initialize(int, unsigned long, unsigned long, unsigned long,
-		unsigned long, vector<unsigned long>, vector<unsigned long>,
+		unsigned long, vector<unsigned long>, vector<unsigned long>,vector<unsigned long>,unsigned long, vector<unsigned long>,
 		enum _schedule_kernel, unsigned long, string);
 
 
@@ -36,6 +36,9 @@ public:
 	static unsigned long 			getDistance();
 	static unsigned long 			getRltDeadline();
 	static double 					getRltDeadline_ms();
+	static unsigned long 		getMaxTime();
+	static vector<unsigned long> 	getTimes();
+	static vector<unsigned long> 	getFreqs();
 	static vector<unsigned long> 	getWcets();
 	static vector<double> 			getDwcets();
 	static vector<unsigned long> 	getArrivalTimes();
@@ -56,7 +59,10 @@ private:
 	static unsigned long 			distance;
 	static unsigned long 			rltDeadline;
 	static double 					rltDeadline_ms;
-	static vector<unsigned long> 	wcets;
+	static unsigned long 			maxTime;
+	static vector<unsigned long> 		times;
+	static vector<unsigned long> 		freq;
+	static vector<unsigned long> 	        wcets;
 	static vector<double> 			dwcets;
 	static vector<unsigned long> 	arrival_times;
 	static enum _schedule_kernel 	kernel;

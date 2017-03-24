@@ -14,6 +14,9 @@ unsigned long 			Scratch::distance;
 unsigned long 			Scratch::rltDeadline;
 double 					Scratch::rltDeadline_ms;
 vector<unsigned long> 	Scratch::wcets;
+vector<unsigned long> 	Scratch::freq;
+vector<unsigned long> 	Scratch::times;
+unsigned long 			Scratch::maxTime;
 vector<double> 			Scratch::dwcets;
 vector<unsigned long> 	Scratch::arrival_times;
 enum _schedule_kernel 	Scratch::kernel;
@@ -28,8 +31,7 @@ sem_t 					Scratch::access_sem;
 
 void Scratch::initialize(int _nstage, unsigned long _period,
 	unsigned long _jitter, unsigned long _distance,
-	unsigned long _rltDeadline, vector<unsigned long> _wcets,
-	vector<unsigned long> _arrival_times, 
+	unsigned long _rltDeadline, vector<unsigned long> _wcets,vector<unsigned long> _times,vector<unsigned long> _freq,unsigned long _maxTime,vector<unsigned long> _arrival_times, 
 	enum _schedule_kernel _kernel, unsigned long _duration,
 	string _name){
 
@@ -38,8 +40,12 @@ void Scratch::initialize(int _nstage, unsigned long _period,
 	jitter          = _jitter;
 	distance 		= _distance;
 	rltDeadline 	= _rltDeadline;
+	maxTime    	= _maxTime;
 	rltDeadline_ms 	= (double)rltDeadline/1000;
+	
 	wcets           = _wcets;
+	times		= _times;
+	freq		= _freq;
 	arrival_times   = _arrival_times;
 	kernel 			= _kernel;
 	duration 		= _duration;
@@ -186,6 +192,7 @@ int Scratch::getNstage(){
 	sem_post(&access_sem);
 	return ret;
 }
+
 unsigned long Scratch::getPeriod(){
 	sem_wait(&access_sem);
 	unsigned ret = period;
@@ -216,6 +223,20 @@ double 	Scratch::getRltDeadline_ms(){
 	sem_post(&access_sem);
 	return ret;
 }
+vector<unsigned long> Scratch::getFreqs(){
+	sem_wait(&access_sem);
+	vector<unsigned long> ret = freq;
+	sem_post(&access_sem);
+	return ret;
+}
+
+vector<unsigned long> Scratch::getTimes(){
+	sem_wait(&access_sem);
+	vector<unsigned long> ret = times;
+	sem_post(&access_sem);
+	return ret;
+}
+
 vector<unsigned long> Scratch::getWcets(){
 	sem_wait(&access_sem);
 	vector<unsigned long> ret = wcets;
@@ -228,7 +249,12 @@ vector<double> 	Scratch::getDwcets(){
 	sem_post(&access_sem);
 	return ret;
 }
-
+unsigned long Scratch::getMaxTime(){
+	sem_wait(&access_sem);
+	unsigned long ret = maxTime;
+	sem_post(&access_sem);
+	return ret;
+}
 
 vector<unsigned long> Scratch::getArrivalTimes(){
 	sem_wait(&access_sem);
