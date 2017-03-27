@@ -184,7 +184,7 @@ std::string freq_str = std::to_string(freq);
 //echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 
 
-//system(("echo " + freq_str + " > " + freq_cpu[core]).c_str());
+system(("echo " + freq_str + " > " + freq_cpu[core]).c_str());
 
 }
 

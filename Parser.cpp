@@ -98,13 +98,16 @@ int Parser::parseFile(){
 	vector<unsigned long> times = parseTimeVectorMicro<unsigned long>(
 		freq_node.child("time"));
 
-	unsigned long maxTime = times[0]/100;
+	unsigned long maxTime = times[0]/1000;
+	unsigned long sum     = 0;
 	for (unsigned short i=0;i<times.size();i++) // 100us steps
 	{
-		times[i]=times[i]/100; 
-		cout << "times= " << times[i] << endl;	
+		times[i]=times[i]/1000; 	
 		if (times[i] > maxTime)
 			maxTime = times[i];
+		sum+=times[i];
+		times[i]=sum;
+		cout << "times= " << times[i] << endl;
 	}
 	
 	vector<unsigned long> freq = parseTimeVectorMicro<unsigned long>(

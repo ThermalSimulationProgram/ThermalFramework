@@ -159,7 +159,7 @@ temp_res_type TempWatcher::get_cpu_temperature(){
     const char* n[] = {	"/sys/class/hwmon/hwmon0/temp1_input",
     "/sys/class/hwmon/hwmon1/temp1_input",
     "/sys/class/hwmon/hwmon2/temp2_input",
-    "/sys/class/hwmon/hwmon2/temp4_input"};
+    "/sys/class/hwmon/hwmon2/temp2_input"};
 
 
     for ( int i = 0; i < TEMP_IDX_MAX; ++i) {

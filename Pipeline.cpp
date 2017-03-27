@@ -111,6 +111,7 @@ void Pipeline::initialize(){
 	dispatcher->trigger();
 
 	scheduler->trigger();
+	scheduler->activate();
 
 	tempwatcher->trigger();
 
@@ -149,17 +150,18 @@ int Pipeline::simulate(){
 	}
 	
 	dispatcher->activate();
-	dispatcher->setCPU(n_cpus-1);
+
+	dispatcher->setCPU(0);
 	
-	scheduler->activate();
-	scheduler->setCPU(n_cpus - 2);
+	
+	scheduler->setCPU(0);
 
 	tempwatcher->activate();
 	if(workers.size()==1){
-		tempwatcher->setCPU(n_cpus - worker_cpu[0] - 1);
+		tempwatcher->setCPU(0);
 	}
 	else
-		tempwatcher->setCPU(n_cpus - 1);
+		tempwatcher->setCPU(0);
 		
 	// record start time and send it to TimedRunnable objects 
 	struct timespec rem;
