@@ -64,6 +64,8 @@ void Worker::setfreqs_times(vector<unsigned long> _freqs , vector<unsigned long>
  freqs_nr = (int)freqs_pr.size();
  times_max = _times_max; 
 
+ system("echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor");
+
 }
 
 bool Worker::isInitialized(){
@@ -181,7 +183,8 @@ std::string freq_str = std::to_string(freq);
 //cout <<  " freq ="  << freq_str << endl ;
 //echo userspace > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 
-system(("echo " + freq_str + " > " + freq_cpu[core]).c_str());
+
+//system(("echo " + freq_str + " > " + freq_cpu[core]).c_str());
 
 }
 
@@ -214,10 +217,11 @@ void Worker::wrapper(){
 	unsigned long start;
 	unsigned long end;
 	unsigned long total_exed;
+	unsigned long total_exed_ms;
 
 	while(Pipeline::isSimulating())
 	{
-		if (toff >= 100){
+		/*if (toff >= 100){
 			sem_wait(&state_sem);
 		 	latestSleep = TimeUtil::getTime();
 			state = _sleep;
@@ -250,10 +254,13 @@ void Worker::wrapper(){
 				Statistics::addTrace(thread_type, id, sleep_end);
 				continue; // if current job is sleeping when it receives a schedule signal, quit PTM to continue next PTM with new ton and toff
 			}
-		}
+		}*/
 	
 		if (ton >= 1000)
-		{	sem_wait(&state_sem);
+		{	
+			loop=true;
+			setfreq = true;
+			sem_wait(&state_sem);
 			latestSleep = TimeUtil::Millis(0);
 			state = _active;
 			sem_post(&state_sem);
@@ -277,7 +284,7 @@ void Worker::wrapper(){
 				if ((setfreq) && (loop))
 				{
 					setCPUfreq(freqs_pr[idx],0);
-					Statistics::addTrace(thread_type, /*(unsigned int)freqs_pr[idx]*/ 11 + idx , freq_active_start);
+					Statistics::addTrace(thread_type, (unsigned int)freqs_pr[idx]/* 11 + idx */, freq_active_start);
 					setfreq = false;
 					cnt=1;
 					
@@ -287,13 +294,21 @@ void Worker::wrapper(){
 					
 				
 				
-				cnt++;
+				//cnt++;
 				
+				end = TimeUtil::convert_us(TimeUtil::getTime());
+				exedSlice = end - start;
+				total_exed = total_exed + exedSlice;
+				start = end;
+				
+				total_exed_ms =total_exed/1000;
+				
+				//cout << "TotalExed = " << total_exed_ms <<endl;
 
-				if ((cnt==times_pr[idx]) && (loop))
+				if ((total_exed_ms==times_pr[idx]) && (loop))
 				{
 					cnt=0;
-					Statistics::addTrace(thread_type, /*(unsigned int)freqs_pr[idx]*/11+idx, freq_active_end);
+					Statistics::addTrace(thread_type, (unsigned int)freqs_pr[idx]/*11+idx*/, freq_active_end);
 					idx++;
 					if (idx==freqs_nr)
 					{
@@ -304,10 +319,7 @@ void Worker::wrapper(){
 									
 				}
 
-				end = TimeUtil::convert_us(TimeUtil::getTime());
-				exedSlice = end - start;
-				total_exed = total_exed + exedSlice;
-				start = end;
+				
 				if (current_job != NULL){
 					if (current_job->execute(exedSlice) == 1)
 						finishedJob();
