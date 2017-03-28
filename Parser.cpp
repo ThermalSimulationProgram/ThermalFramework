@@ -113,10 +113,16 @@ int Parser::parseFile(){
 	vector<unsigned long> freq = parseTimeVectorMicro<unsigned long>(
 			freq_node.child("frequency"));
 
-
+	vector<unsigned long> available_frequencies = {1199000,1333000,1466000,1599000,1733000,1866000,1999000,2133000,2266000,2399000,2400000};
+			
 	for (unsigned short i=0;i<freq.size();i++)
 	{
-		cout << "freq= " << freq[i] << endl;	
+		int index=freq[i];
+		if (index<500)
+			index=500;
+		index = (index-500)/50;
+		freq[i] = available_frequencies[index];
+		cout << "freq= " << freq[i] << endl;
 	}
 	cout << "size= " << freq.size() << endl;
 
